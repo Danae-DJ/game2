@@ -4,6 +4,26 @@ const ctx = canvas.getContext("2d");
 canvas.width = 650;
 canvas.height = 380;
 
+
+class SnakeBody {
+    constructor(radius, color, context, path) {
+        this.radius = radius;
+        this.color = color;
+        this.context = context;
+        this.path = path;
+    }
+    drawCircle(x, y, radius, color) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, 2*Math.PI);
+        this.context.fillStyle = color;
+        this.context.fill();
+        this.context.closePath();
+    }
+    draw() {
+        this.drawCircle(this.path.slice(-1)[0].x, this.path.slice(-1)[0].y, this.radius, this.color);
+    }
+
+}
 class Snake {
     constructor(position, radius, color, velocity, context) {
         this.position = position;
@@ -12,11 +32,24 @@ class Snake {
         this.velocity = velocity;
         this.context = context;
         this.rotation = 0;
+        this.body = [];
         this.keys = {
             A: false,
             D: false,
         }
         this.keyboard();
+    }
+    initBody() {
+        for (let i=0; i<3; i++) {
+            let path = [];
+            for (let k=0; k<12; k++) {
+                path.push({
+                    x:this.position.x,
+                    y:this.position.y
+                });
+            }
+            this.body.push(new SnakeBody(this.radius, this.color, this.context, path));
+        }
     }
     drawCircle(x, y, radius, color) {
         this.context.beginPath();
@@ -36,6 +69,19 @@ class Snake {
         this.drawCircle(this.position.x+1, this.position.y+9, this.radius-6, "black");
         this.drawCircle(this.position.x+3, this.position.y+8, this.radius-9, "white");
     }
+    drawBody() {
+        this.body[0].path.unshift({
+            x:this.position.x,
+            y:this.position.y
+        });
+        this.body[0].draw();
+
+        for(let i = 1; i<this.body.length; i++) {
+            this.body[i].path.unshift(this.body[i-1].path.pop());
+            this.body[i].draw();
+        }
+        this.body[this.body.length-1].path.pop();
+    }
     draw() {
         this.context.save();
         
@@ -43,10 +89,10 @@ class Snake {
         this.context.rotate(this.rotation);//(angle * Math.PI / 180) Rotate the canvas by degrees (converted to radians)
         this.context.translate(-this.position.x, -this.position.y);
         this.drawHead();
-
         this.context.restore();
     }
     update() {
+        this.drawBody();
         this.draw();
         if (this.keys.A) {
             this.rotation -= 0.04;
@@ -77,6 +123,7 @@ class Snake {
     }
 }
 const snake = new Snake({x:200, y:200}, 11, "#feba39",1.5, ctx);
+snake.initBody();
 
 function background() {
     ctx.fillStyle = "#1b1c30";
