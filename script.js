@@ -4,7 +4,41 @@ const ctx = canvas.getContext("2d");
 canvas.width = 650;
 canvas.height = 380;
 
+class Apple {
+    constructor(position, radius, color, context) {
+        this.position = position;
+        this.radius = radius;
+        this.color = color;
+        this.context = context;
+    }
+    draw() {
+        this.context.beginPath();
+        this.context.arc(this.position.x, this.position.y, this.radius, 0, 2*Math.PI);
+        this.context.fillStyle = this.color;
+        this.context.fill();
+        this.context.closePath();
 
+    }
+    collision(snake) {
+        let v1 = {
+            x:this.position.x - snake.position.x,
+            y:this.position.y - snake.position.y
+        }
+        let distance = Math.sqrt(
+            (v1.x*v1.x) + (v1.y*v1.y)
+        );
+        if (distance < snake.radius + this.radius) {
+            this.position = {
+                x: Math.floor(Math.random() *
+            ((canvas.width-this.radius) - this.radius + 1)) + this.radius,
+                y: Math.floor(Math.random() *
+            ((canvas.height-this.radius) - this.radius +1)) + this.radius,
+            }
+            snake.createBody();
+        }
+    }
+
+}
 class SnakeBody {
     constructor(radius, color, context, path) {
         this.radius = radius;
@@ -50,6 +84,17 @@ class Snake {
             }
             this.body.push(new SnakeBody(this.radius, this.color, this.context, path));
         }
+    }
+    createBody() {
+        let path = [];
+        for (let k=0; k<12; k++) {
+            path.push({
+                x:this.body.slice(-1)[0].path.slice(-1)[0].x,
+                y:this.body.slice(-1)[0].path.slice(-1)[0].y
+            });
+        }
+        this.body.push(new SnakeBody(this.radius, this.color, this.context, path));
+    
     }
     drawCircle(x, y, radius, color) {
         this.context.beginPath();
@@ -124,6 +169,7 @@ class Snake {
 }
 const snake = new Snake({x:200, y:200}, 11, "#feba39",1.5, ctx);
 snake.initBody();
+const apple = new Apple({x:300, y:300}, 8, "red", ctx);
 
 function background() {
     ctx.fillStyle = "#1b1c30";
@@ -135,11 +181,12 @@ function background() {
         }
     }
 }
-// rotation loop to smoothly rotate the snake head when pressing A or D keys
+
 function update() {
     background();
     snake.update();
-
+    apple.draw();
+    apple.collision(snake);
     requestAnimationFrame(update);
 }
 update();
