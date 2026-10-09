@@ -12,11 +12,15 @@ class Apple {
         this.context = context;
     }
     draw() {
+        this.context.save();
         this.context.beginPath();
         this.context.arc(this.position.x, this.position.y, this.radius, 0, 2*Math.PI);
         this.context.fillStyle = this.color;
+        this.context.shadowColor = this.color;
+        this.context.shadowBlur = 10;
         this.context.fill();
         this.context.closePath();
+        this.context.restore();
 
     }
     collision(snake) {
@@ -45,13 +49,19 @@ class SnakeBody {
         this.color = color;
         this.context = context;
         this.path = path;
+        this.transparency = 1;
     }
     drawCircle(x, y, radius, color) {
+        this.context.save();
         this.context.beginPath();
         this.context.arc(x, y, radius, 0, 2*Math.PI);
         this.context.fillStyle = color;
+        this.context.globalAlpha = this.transparency;
+        this.context.shadowColor = this.color;
+        this.context.shadowBlur = 10;
         this.context.fill();
         this.context.closePath();
+        this.context.restore();
     }
     draw() {
         this.drawCircle(this.path.slice(-1)[0].x, this.path.slice(-1)[0].y, this.radius, this.color);
@@ -66,10 +76,13 @@ class Snake {
         this.velocity = velocity;
         this.context = context;
         this.rotation = 0;
+        this.transparency = 1;
         this.body = [];
+        this.isDeath = false;
         this.keys = {
             A: false,
             D: false,
+            enable: true
         }
         this.keyboard();
     }
@@ -96,23 +109,28 @@ class Snake {
         this.body.push(new SnakeBody(this.radius, this.color, this.context, path));
     
     }
-    drawCircle(x, y, radius, color) {
+    drawCircle(x, y, radius, color, shadowColor) {
+        this.context.save();
         this.context.beginPath();
         this.context.arc(x, y, radius, 0, 2*Math.PI); //the angle is in radians
         this.context.fillStyle = color;
+        this.context.globalAlpha = this.transparency;
+        this.context.shadowColor = shadowColor;
+        this.context.shadowBlur = 10;
         this.context.fill();
         this.context.closePath();
+        this.context.restore();
     }
     drawHead(){
-        this.drawCircle(this.position.x, this.position.y, this.radius, this.color);
+        this.drawCircle(this.position.x, this.position.y, this.radius, this.color, this.color);
         // Draw the eyes
-        this.drawCircle(this.position.x, this.position.y-9, this.radius-4, "white");
-        this.drawCircle(this.position.x+1, this.position.y-9, this.radius-6, "black");
-        this.drawCircle(this.position.x+3, this.position.y-8, this.radius-9, "white");
+        this.drawCircle(this.position.x, this.position.y-9, this.radius-4, "white", "transparent");
+        this.drawCircle(this.position.x+1, this.position.y-9, this.radius-6, "black", "transparent");
+        this.drawCircle(this.position.x+3, this.position.y-8, this.radius-9, "white", "transparent");
 
-        this.drawCircle(this.position.x, this.position.y+9, this.radius-4, "white");
-        this.drawCircle(this.position.x+1, this.position.y+9, this.radius-6, "black");
-        this.drawCircle(this.position.x+3, this.position.y+8, this.radius-9, "white");
+        this.drawCircle(this.position.x, this.position.y+9, this.radius-4, "white", "transparent");
+        this.drawCircle(this.position.x+1, this.position.y+9, this.radius-6, "black", "transparent");
+        this.drawCircle(this.position.x+3, this.position.y+8, this.radius-9, "white", "transparent");
     }
     drawBody() {
         this.body[0].path.unshift({
@@ -137,16 +155,43 @@ class Snake {
         this.context.restore();
     }
     update() {
+        if(this.isDeath){
+            this.transparency -= 0.02;
+        }
+
         this.drawBody();
         this.draw();
-        if (this.keys.A) {
+        if (this.keys.A && this.keys.enable) {
             this.rotation -= 0.04;
         }
-        if (this.keys.D) {
+        if (this.keys.D && this.keys.enable) {
             this.rotation += 0.04;
         }
         this.position.x += Math.cos(this.rotation)*this.velocity;
         this.position.y += Math.sin(this.rotation)*this.velocity;
+
+        this.collision();
+    }
+    collision() {
+        if(this.position.x-this.radius <= 0 ||
+            this.position.x+this.radius >= canvas.width ||
+            this.position.y-this.radius <= 0 ||
+            this.position.y+this.radius >= canvas.height) {
+                
+                this.death();
+            }
+    }
+    death() {
+        this.velocity = 0;
+        this.keys.enable = false;
+        this.isDeath = true;
+        this.body.forEach((b)=> {
+            let lastItem = b.path[b.path.length-1];
+            for(let i = 0; i < b.path.length; i++){
+                b.path[i] = lastItem;
+            }
+            b.transparency = this.transparency;
+        });
     }
     keyboard(){
         document.addEventListener("keydown", (evt) => { //push the key
