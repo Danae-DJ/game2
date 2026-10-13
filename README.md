@@ -2,9 +2,9 @@
 This game is a clasic game about the snake and the apple; the snake should eat the apple to grow and evit to crash with the wall.
 
 ## install
-Node.js
-Git
-npm
+- Node.js
+- Git
+- npm
 
 ## instructions
 1. create a base of game with background
@@ -17,3 +17,7 @@ npm
 8. create the menu to choice a character and start/restar the game
 9. configure the score
 9. create the over of game and restart the game.
+
+### Original
+Game create by Danae-DJ
+original tutorial: https://www.youtube.com/watch?v=Sl6YUIvwbAk&t=2290s 
