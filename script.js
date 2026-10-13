@@ -1,8 +1,23 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-// Set canvas dimensions
+
+const menu = document.querySelector(".menu");
+const score = document.querySelector(".score");
+const canvas2 = document.getElementById("snake-1");
+const canvas3 = document.getElementById("snake-2");
+
+const ctx2 = canvas2.getContext("2d");
+const ctx3 = canvas3.getContext("2d");
+
+canvas2.width = 190;
+canvas2.height = 80;
+canvas3.width = 190;
+canvas3.height = 80;
 canvas.width = 650;
 canvas.height = 380;
+
+let play = false;
+let scoreP = 0;
 
 class Apple {
     constructor(position, radius, color, context) {
@@ -39,6 +54,8 @@ class Apple {
             ((canvas.height-this.radius) - this.radius +1)) + this.radius,
             }
             snake.createBody();
+            scoreP++;
+            score.textContent = scoreP;
         }
     }
 
@@ -69,7 +86,7 @@ class SnakeBody {
 
 }
 class Snake {
-    constructor(position, radius, color, velocity, context) {
+    constructor(position, radius, color, velocity,length, pathLength, context) {
         this.position = position;
         this.radius = radius;
         this.color = color;
@@ -79,6 +96,8 @@ class Snake {
         this.transparency = 1;
         this.body = [];
         this.isDeath = false;
+        this.length = length;
+        this.pathLength = pathLength;
         this.keys = {
             A: false,
             D: false,
@@ -87,9 +106,9 @@ class Snake {
         this.keyboard();
     }
     initBody() {
-        for (let i=0; i<3; i++) {
+        for (let i=0; i<this.length; i++) {
             let path = [];
-            for (let k=0; k<12; k++) {
+            for (let k=0; k<this.pathLength; k++) {
                 path.push({
                     x:this.position.x,
                     y:this.position.y
@@ -100,14 +119,19 @@ class Snake {
     }
     createBody() {
         let path = [];
-        for (let k=0; k<12; k++) {
+        for (let k=0; k<this.pathLength; k++) {
             path.push({
                 x:this.body.slice(-1)[0].path.slice(-1)[0].x,
                 y:this.body.slice(-1)[0].path.slice(-1)[0].y
             });
         }
         this.body.push(new SnakeBody(this.radius, this.color, this.context, path));
-    
+        
+        if(this.pathLength < 8){
+            this.body.push(new SnakeBody(this.radius, this.color, this.context, [...path]));
+            this.body.push(new SnakeBody(this.radius, this.color, this.context, [...path]));
+            this.body.push(new SnakeBody(this.radius, this.color, this.context, [...path]));
+        }
     }
     drawCircle(x, y, radius, color, shadowColor) {
         this.context.save();
@@ -157,6 +181,11 @@ class Snake {
     update() {
         if(this.isDeath){
             this.transparency -= 0.02;
+            if(this.transparency<=0){
+                play = false;
+                menu.style.display = "flex";
+                return
+            }
         }
 
         this.drawBody();
@@ -193,6 +222,15 @@ class Snake {
             b.transparency = this.transparency;
         });
     }
+    drawCharacter() {
+        for(let i = 1; i <= this.length; i++){
+            this.drawCircle(
+                this.position.x - (this.pathLength*this.velocity*i),
+                this.position.y, this.radius, this.color, this.color
+            );
+        }
+        this.drawHead();
+    }
     keyboard(){
         document.addEventListener("keydown", (evt) => { //push the key
             if (evt.key == "a" || evt.key == "A") {
@@ -212,10 +250,38 @@ class Snake {
         });
     }
 }
-const snake = new Snake({x:200, y:200}, 11, "#feba39",1.5, ctx);
+const snake = new Snake({x:200, y:200}, 11, "#feba39",1.5, 3, 12, ctx);
 snake.initBody();
+const snakeP1 = new Snake({x:165, y:40}, 11, "#feba39",1.5, 8, 12, ctx2);
+snakeP1.initBody();
+snakeP1.drawCharacter();
+const snakeP2 = new Snake({x:165, y:40}, 11, "#88fc03",1.5, 24, 4, ctx3);
+snakeP2.initBody();
+snakeP2.drawCharacter();
 const apple = new Apple({x:300, y:300}, 8, "red", ctx);
 
+canvas2.addEventListener("click", ()=> {
+    init(3,12,"#feba39");
+});
+canvas3.addEventListener("click", ()=> {
+    init(8,4,"#88fc03");
+});
+function init(length, pathLength, color) {
+    snake.body.length = 0;
+    snake.color = color;
+    snake.length = length;
+    snake.pathLength = pathLength;
+    snake.position = {x:200, y:200};
+    snake.isDeath = false;
+    snake.velocity = 1.5;
+    snake.transparency = 1; 
+    snake.initBody();
+    snake.keys.enable = true;
+    play = true;
+    menu.style.display = "none";
+    scoreP = 0;
+    score.textContent = scoreP;
+}
 function background() {
     ctx.fillStyle = "#1b1c30";
     ctx.fillRect(0,0, canvas.width, canvas.height);
@@ -229,9 +295,11 @@ function background() {
 
 function update() {
     background();
-    snake.update();
-    apple.draw();
-    apple.collision(snake);
+    if(play) {
+        snake.update();
+        apple.draw();
+        apple.collision(snake);
+    }
     requestAnimationFrame(update);
 }
 update();
