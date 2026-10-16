@@ -393,11 +393,11 @@ document.addEventListener("keydown", (evt) => {
     if (evt.repeat) {
         return;
     }
-    if (evt.key === "Enter") {
+    if (evt.key === "Space") {
         evt.preventDefault();
         togglePause();
     }
-    if (evt.key === "Shift") {
+    if (evt.key === "Enter") {
         restartGame();
     }
 });
