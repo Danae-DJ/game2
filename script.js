@@ -18,6 +18,11 @@ canvas.height = 380;
 
 let play = false;
 let scoreP = 0;
+//Pause controls
+let paused = false;
+
+const pauseButton = document.getElementById("pause-button");
+const pauseMessage = document.getElementById("pause-message");
 
 class Apple {
     constructor(position, radius, color, context) {
@@ -320,6 +325,9 @@ function init(length, pathLength, color) {
     snake.transparency = 1; 
     snake.initBody();
     snake.keys.enable = true;
+    paused = false;
+    pauseButton.textContent = "PAUSE";
+    pauseMessage.style.display = "none";
     play = true;
     menu.style.display = "none";
     scoreP = 0;
@@ -336,14 +344,48 @@ function background() {
         }
     }
 }
-
-function update() {
-    background();
-    if(play) {
-        snake.update();
-        apple.draw();
-        apple.collision(snake);
+// Pause or resume the game
+function togglePause() {
+    // Only pause when a game is running
+    if (!play || snake.isDeath) {
+        return;
     }
+
+    paused = !paused;
+
+    if (paused) {
+        pauseButton.textContent = "RESUME";
+        pauseMessage.style.display = "block";
+    } else {
+        pauseButton.textContent = "PAUSE";
+        pauseMessage.style.display = "none";
+    }
+}
+// Pause using the mouse
+pauseButton.addEventListener("click", togglePause);
+// Pause using the Enter key
+document.addEventListener("keydown", (evt) => {
+    if (evt.key === "Enter" && !evt.repeat) {
+        evt.preventDefault();
+        togglePause();
+    }
+});
+function update() {
+    // Only redraw the game when it is not paused
+    if (!paused) {
+        background();
+
+        if (play) {
+            snake.update();
+            apple.draw();
+
+            // Prevent collecting apples after death
+            if (!snake.isDeath) {
+                apple.collision(snake);
+            }
+        }
+    }
+
     requestAnimationFrame(update);
 }
 update();
