@@ -77,17 +77,20 @@ body {
     100% {opacity: 1;}
 }
 
-span {
-    font-size: 15px;
+.menu span {
+    font-size: 12px;
 }
 
 .game-controls {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
     margin-top: 12px;
 }
 
-#pause-button {
+/* Game buttons */
+#pause-button,
+#restart-button {
     padding: 8px 12px;
     color: white;
     background-color: #23253c;
@@ -97,7 +100,8 @@ span {
     cursor: pointer;
 }
 
-#pause-button:hover {
+#pause-button:hover,
+#restart-button:hover {
     background-color: #363958;
 }
 

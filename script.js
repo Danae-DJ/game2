@@ -23,6 +23,7 @@ let paused = false;
 
 const pauseButton = document.getElementById("pause-button");
 const pauseMessage = document.getElementById("pause-message");
+const restartButton = document.getElementById("restart-button");
 
 class Apple {
     constructor(position, radius, color, context) {
@@ -361,13 +362,43 @@ function togglePause() {
         pauseMessage.style.display = "none";
     }
 }
+// Return to the character selection menu
+function restartGame() {
+    // Stop the current game
+    play = false;
+
+    // Reset pause controls
+    paused = false;
+    pauseButton.textContent = "PAUSE";
+    pauseMessage.style.display = "none";
+
+    // Reset snake movement
+    snake.keys.A = false;
+    snake.keys.D = false;
+    snake.keys.enable = false;
+
+    // Reset score
+    scoreP = 0;
+    score.textContent = scoreP;
+
+    // Show character selection menu
+    menu.style.display = "flex";
+}
+// Restart using the mouse
+restartButton.addEventListener("click", restartGame);
 // Pause using the mouse
 pauseButton.addEventListener("click", togglePause);
-// Pause using the Enter key
+// Keyboard controls for Pause and Restart
 document.addEventListener("keydown", (evt) => {
-    if (evt.key === "Enter" && !evt.repeat) {
+    if (evt.repeat) {
+        return;
+    }
+    if (evt.key === "Enter") {
         evt.preventDefault();
         togglePause();
+    }
+    if (evt.key === "Shift") {
+        restartGame();
     }
 });
 function update() {
