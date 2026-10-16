@@ -120,3 +120,34 @@ body {
     z-index: 1;
     display: none;
 }
+
+/* Game mode selection */
+.mode-selection {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.mode-selection button {
+    padding: 12px 18px;
+    color: white;
+    background-color: #23253c;
+    border: 2px solid rgb(207, 235, 244);
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.mode-selection button:hover {
+    background-color: #363958;
+}
+
+/* Character selection */
+.character-selection {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 15px;
+    width: 100%;
+}

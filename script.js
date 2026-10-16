@@ -3,6 +3,13 @@ const ctx = canvas.getContext("2d");
 
 const menu = document.querySelector(".menu");
 const score = document.querySelector(".score");
+// Game mode selection
+const modeSelection = document.querySelector(".mode-selection");
+const characterSelection = document.querySelector(".character-selection");
+
+const onePlayerButton = document.getElementById("one-player");
+const twoPlayersButton = document.getElementById("two-players");
+
 const canvas2 = document.getElementById("snake-1");
 const canvas3 = document.getElementById("snake-2");
 
@@ -190,7 +197,7 @@ class Snake {
             this.transparency -= 0.02;
             if(this.transparency<=0){
                 play = false;
-                menu.style.display = "flex";
+                showModeSelection();
                 return
             }
         }
@@ -362,6 +369,16 @@ function togglePause() {
         pauseMessage.style.display = "none";
     }
 }
+// Show the game mode selection screen
+function showModeSelection() {
+    modeSelection.style.display = "flex";
+    characterSelection.style.display = "none";
+    menu.style.display = "flex";
+}
+onePlayerButton.addEventListener("click", () => {
+    modeSelection.style.display = "none";
+    characterSelection.style.display = "flex";
+});
 // Return to the character selection menu
 function restartGame() {
     // Stop the current game
@@ -381,8 +398,8 @@ function restartGame() {
     scoreP = 0;
     score.textContent = scoreP;
 
-    // Show character selection menu
-    menu.style.display = "flex";
+    // Return to the game mode selection screen
+    showModeSelection();
 }
 // Restart using the mouse
 restartButton.addEventListener("click", restartGame);
