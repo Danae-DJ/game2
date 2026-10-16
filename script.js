@@ -18,6 +18,12 @@ canvas.height = 380;
 
 let play = false;
 let scoreP = 0;
+//Pause controls
+let paused = false;
+
+const pauseButton = document.getElementById("pause-button");
+const pauseMessage = document.getElementById("pause-message");
+const restartButton = document.getElementById("restart-button");
 
 class Apple {
     constructor(position, radius, color, context) {
@@ -96,6 +102,7 @@ class Snake {
         this.transparency = 1;
         this.body = [];
         this.isDeath = false;
+        this.distanceTraveled = 0;
         this.length = length;
         this.pathLength = pathLength;
         this.keys = {
@@ -198,8 +205,13 @@ class Snake {
         }
         this.position.x += Math.cos(this.rotation)*this.velocity;
         this.position.y += Math.sin(this.rotation)*this.velocity;
+        this.distanceTraveled += this.velocity;
 
         this.collision();
+
+        if (!this.isDeath) {
+            this.bodyCollision();
+        }
     }
     collision() {
         if(this.position.x-this.radius <= 0 ||
@@ -209,6 +221,42 @@ class Snake {
                 
                 this.death();
             }
+    }
+    bodyCollision() {
+        // Distance needed to avoid detecting nearby body segments
+        const safeDistance = this.radius * 2;
+
+        for (let i = 0; i < this.body.length; i++) {
+
+            // Calculate the estimated distance behind the head
+            const distanceBehind = (i + 1) * this.pathLength * this.velocity;
+
+            // Ignore segments that are too close to the head
+            if (distanceBehind <= safeDistance) {
+                continue;
+            }
+
+            // Ignore segments that haven't started moving yet
+            if (this.distanceTraveled < distanceBehind) {
+                continue;
+            }
+
+            // Get the position of each body segment
+            const segment = this.body[i];
+            const position = segment.path[segment.path.length - 1];
+
+            // Calculate the distance between the head and the segment
+            const dx = this.position.x - position.x;
+            const dy = this.position.y - position.y;
+
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Check if the head touches the body
+            if (distance < this.radius + segment.radius) {
+                this.death();
+                break;
+            }
+        }
     }
     death() {
         this.velocity = 0;
@@ -272,15 +320,20 @@ function init(length, pathLength, color) {
     snake.length = length;
     snake.pathLength = pathLength;
     snake.position = {x:200, y:200};
+    snake.rotation = 0;
     snake.isDeath = false;
     snake.velocity = 1.5;
     snake.transparency = 1; 
     snake.initBody();
     snake.keys.enable = true;
+    paused = false;
+    pauseButton.textContent = "PAUSE";
+    pauseMessage.style.display = "none";
     play = true;
     menu.style.display = "none";
     scoreP = 0;
     score.textContent = scoreP;
+    snake.distanceTraveled = 0;
 }
 function background() {
     ctx.fillStyle = "#1b1c30";
@@ -292,14 +345,78 @@ function background() {
         }
     }
 }
-
-function update() {
-    background();
-    if(play) {
-        snake.update();
-        apple.draw();
-        apple.collision(snake);
+// Pause or resume the game
+function togglePause() {
+    // Only pause when a game is running
+    if (!play || snake.isDeath) {
+        return;
     }
+
+    paused = !paused;
+
+    if (paused) {
+        pauseButton.textContent = "RESUME";
+        pauseMessage.style.display = "block";
+    } else {
+        pauseButton.textContent = "PAUSE";
+        pauseMessage.style.display = "none";
+    }
+}
+// Return to the character selection menu
+function restartGame() {
+    // Stop the current game
+    play = false;
+
+    // Reset pause controls
+    paused = false;
+    pauseButton.textContent = "PAUSE";
+    pauseMessage.style.display = "none";
+
+    // Reset snake movement
+    snake.keys.A = false;
+    snake.keys.D = false;
+    snake.keys.enable = false;
+
+    // Reset score
+    scoreP = 0;
+    score.textContent = scoreP;
+
+    // Show character selection menu
+    menu.style.display = "flex";
+}
+// Restart using the mouse
+restartButton.addEventListener("click", restartGame);
+// Pause using the mouse
+pauseButton.addEventListener("click", togglePause);
+// Keyboard controls for Pause and Restart
+document.addEventListener("keydown", (evt) => {
+    if (evt.repeat) {
+        return;
+    }
+    if (evt.key === " ") { //Space key
+        evt.preventDefault();
+        togglePause();
+    }
+    if (evt.key === "Enter") {
+        restartGame();
+    }
+});
+function update() {
+    // Only redraw the game when it is not paused
+    if (!paused) {
+        background();
+
+        if (play) {
+            snake.update();
+            apple.draw();
+
+            // Prevent collecting apples after death
+            if (!snake.isDeath) {
+                apple.collision(snake);
+            }
+        }
+    }
+
     requestAnimationFrame(update);
 }
 update();
