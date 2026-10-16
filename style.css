@@ -18,15 +18,21 @@ body {
     position: relative;
     color: white;
 }
+.game-board {
+    position: relative;
+    line-height: 0;
+}
 #canvas {
     border: 2px solid rgb(207, 235, 244);
     box-shadow: 0 0 10px rgb(91, 199, 223);
 }
 .container .score {
     position: absolute;
-    top: 0;
+    top: 12px;
     left: 12px;
     font-size: 40px;
+    line-height: 1;
+    z-index: 1;
 }
 .container .menu {
     border: 2px solid white;
@@ -42,6 +48,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
+    z-index: 3;
 }
 .container .menu h2 {
     font-size: 70px;
@@ -70,6 +77,46 @@ body {
     100% {opacity: 1;}
 }
 
-span {
-    font-size: 15px;
+.menu span {
+    font-size: 12px;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+/* Game buttons */
+#pause-button,
+#restart-button {
+    padding: 8px 12px;
+    color: white;
+    background-color: #23253c;
+    border: 2px solid rgb(207, 235, 244);
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#pause-button:hover,
+#restart-button:hover {
+    background-color: #363958;
+}
+
+#pause-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 20px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 2px solid white;
+    border-radius: 8px;
+    font-size: 28px;
+    text-align: center;
+    z-index: 1;
+    display: none;
 }
