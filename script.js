@@ -393,7 +393,7 @@ document.addEventListener("keydown", (evt) => {
     if (evt.repeat) {
         return;
     }
-    if (evt.key === " ") {
+    if (evt.key === " ") { //Space key
         evt.preventDefault();
         togglePause();
     }
