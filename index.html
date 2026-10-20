@@ -34,6 +34,21 @@
                     <span>Use "A" and "D" to move the Snake</span>
                     <span>Use "Space" → Pause and "Enter" → Restart or buttons</span>
                 </div>
+
+                <!-- Two-player character selection -->
+                <div class="multiplayer-selection">
+                    <h3 id="player-turn">PLAYER 1 - SELECT YOUR SNAKE</h3>
+
+                    <div class="multiplayer-characters">
+                        <canvas id="snake-3"></canvas>
+                        <canvas id="snake-4"></canvas>
+                        <canvas id="snake-5"></canvas>
+                        <canvas id="snake-6"></canvas>
+                    </div>
+
+                    <span>PLAYER 1: A / D</span>
+                    <span>PLAYER 2: LEFT / RIGHT</span>
+                </div>
             </div>
         </div>
 
@@ -43,7 +58,9 @@
         </div>
 
     </div>
-
+    <script src="js/classes.js"></script>
     <script src="script.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/multiplayer.js"></script>
 </body>
 </html>

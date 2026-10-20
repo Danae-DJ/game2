@@ -39,8 +39,8 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 8px;
     position: absolute;
-    width: 70%;
-    height: 70%;
+    width: 85%;
+    height: 85%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -150,4 +150,40 @@ body {
     justify-content: space-around;
     gap: 15px;
     width: 100%;
+}
+/* Multiplayer character selection */
+.multiplayer-selection {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 15px;
+    width: 100%;
+}
+
+.multiplayer-selection h3 {
+    font-size: 16px;
+    text-align: center;
+}
+
+.multiplayer-characters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+#snake-3,
+#snake-4,
+#snake-5,
+#snake-6 {
+    border: 2px solid white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#snake-3:hover,
+#snake-4:hover,
+#snake-5:hover,
+#snake-6:hover {
+    background-color: rgb(255, 255, 255, 0.1);
 }
