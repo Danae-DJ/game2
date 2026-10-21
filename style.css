@@ -187,3 +187,40 @@ body {
 #snake-6:hover {
     background-color: rgb(255, 255, 255, 0.1);
 }
+
+/* Multiplayer boards */
+.multiplayer-boards {
+    display: none;
+    justify-content: center;
+    gap: 20px;
+}
+
+.player-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-board h3 {
+    font-size: 18px;
+}
+
+.board-area {
+    position: relative;
+    line-height: 0;
+}
+
+.board-area canvas {
+    border: 2px solid rgb(207, 235, 244);
+    box-shadow: 0 0 10px rgb(91, 199, 223);
+}
+
+.player-score {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 30px;
+    line-height: 1;
+    color: white;
+}

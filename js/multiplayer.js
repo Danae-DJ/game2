@@ -2,6 +2,27 @@
 const multiplayerSelection = document.querySelector(".multiplayer-selection");
 const playerTurn = document.getElementById("player-turn");
 
+// Multiplayer game boards
+const multiplayerBoards = document.querySelector(".multiplayer-boards");
+
+const player1Canvas = document.getElementById("canvas-player1");
+const player2Canvas = document.getElementById("canvas-player2");
+
+// Canvas contexts
+const player1Ctx = player1Canvas.getContext("2d");
+const player2Ctx = player2Canvas.getContext("2d");
+
+// Player scores
+const player1Score = document.getElementById("score-player1");
+const player2Score = document.getElementById("score-player2");
+
+// Multiplayer board dimensions
+player1Canvas.width = 400;
+player1Canvas.height = 380;
+
+player2Canvas.width = 400;
+player2Canvas.height = 380;
+
 // Multiplayer character canvases
 const multiplayerCanvases = [
     document.getElementById("snake-3"),
@@ -29,6 +50,10 @@ let currentPlayer = 1;
 
 let player1Choice = null;
 let player2Choice = null;
+
+// Multiplayer snakes
+let player1Snake = null;
+let player2Snake = null;
 
 // Draw multiplayer character previews
 multiplayerCanvases.forEach((canvas, index) => {
@@ -93,6 +118,9 @@ function selectMultiplayerSnake(index) {
         // Both players have selected their characters
         currentPlayer = 0;
         playerTurn.textContent = "BOTH PLAYERS READY!";
+
+        //Start the multiplayer screen
+        showMultiplayerBoards();
     }
 }
 
@@ -102,3 +130,49 @@ multiplayerCanvases.forEach((canvas, index) => {
         selectMultiplayerSnake(index);
     });
 });
+
+// Create multiplayer snakes
+function createMultiplayerSnakes() {
+
+    // Player 1
+    player1Snake = new Snake(
+        { x: 100, y: 190 },
+        11,
+        player1Choice.color,
+        1.5,
+        player1Choice.length,
+        player1Choice.pathLength,
+        player1Ctx
+    );
+
+    player1Snake.initBody();
+
+    // Player 2
+    player2Snake = new Snake(
+        { x: 100, y: 190 },
+        11,
+        player2Choice.color,
+        1.5,
+        player2Choice.length,
+        player2Choice.pathLength,
+        player2Ctx
+    );
+
+    player2Snake.initBody();
+} 
+
+// Show multiplayer game boards
+function showMultiplayerBoards() {
+    // Hide the single-player board
+    document.querySelector(".game-board").style.display = "none";
+
+    // Hide the menu
+    menu.style.display = "none";
+
+    // Show multiplayer boards
+    multiplayerBoards.style.display = "flex";
+
+    // Reset player scores
+    player1Score.textContent = "0";
+    player2Score.textContent = "0";
+}

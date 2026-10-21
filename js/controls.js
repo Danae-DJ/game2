@@ -17,6 +17,12 @@ function togglePause() {
 }
 // Show the game mode selection screen
 function showModeSelection() {
+    // Restore the single-player board
+    document.querySelector(".game-board").style.display = "block";
+
+    // Hide multiplayer boards
+    multiplayerBoards.style.display = "none";
+
     modeSelection.style.display = "flex";
     characterSelection.style.display = "none";
     multiplayerSelection.style.display = "none";
